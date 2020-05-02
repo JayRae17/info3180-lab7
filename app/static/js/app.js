@@ -12,6 +12,11 @@ Vue.component('app-header', {
           <li class="nav-item active">
             <router-link class="nav-link" to="/">Home <span class="sr-only">(current)</span></router-link>
           </li>
+
+          <li class="nav-item active">
+            <router-link class="nav-link" to="/upload">Upload </router-link>
+          </li>
+
         </ul>
       </div>
     </nav>
@@ -51,12 +56,76 @@ const NotFound = Vue.component('not-found', {
     }
 })
 
+
+const upload = Vue.component('upload-form', {
+    template: `
+     <div class="">
+     <h1> Upload Form </h1>
+     <br>
+    
+     
+     <form @submit.prevent="uploadPhoto" method="post" enctype="multipart/form-data" id = "uploadForm">
+
+       <label for ="description"> <h5> Description </h5> </label>
+        <br>
+        <textarea name = "description" class="form-control"></textarea>
+
+        <br>
+       
+
+        <label class="" for="photo"><h5>Photo Upload</h5> </label>
+        <br>
+        <input type="file" class="" name="photo">
+
+        <br>
+        <br>
+
+        <button type="submit" class="btn btn-primary">Submit</button>  
+
+    </form>
+
+    </div>`,
+
+    methods: {
+        uploadPhoto: function() 
+        {
+            let uploadForm = document.getElementById('uploadForm');
+            let form_data = new FormData(uploadForm); 
+
+            fetch("/api/upload", {
+                method: 'POST',
+                body: form_data,
+                headers: {
+                    'X-CSRFToken': token
+                },
+                    credentials: 'same-origin' 
+               })
+                .then(res => res.text())          // convert to plain text
+               
+                .then(text => console.log(text))
+
+                .then(function (response) {
+                return response.json();
+                })
+                .then(function (jsonResponse) {
+                // display a success message
+                console.log(jsonResponse); 
+                })
+                .catch(function (error) {
+                console.log(error);
+                });
+        }
+    }
+ });
+ 
+
 // Define Routes
 const router = new VueRouter({
     mode: 'history',
     routes: [
         {path: "/", component: Home},
         // Put other routes here
+        {path: "/upload/", component: upload},
 
         // This is a catch all route in case none of the above matches
         {path: "*", component: NotFound}

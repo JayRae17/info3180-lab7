@@ -4,10 +4,11 @@ Jinja2 Documentation:    http://jinja.pocoo.org/2/documentation/
 Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
-
+import os
 from app import app
 from flask import render_template, request, jsonify
 from .forms import UploadForm
+from werkzeug.utils import secure_filename
 
 
 ###
@@ -44,10 +45,9 @@ def upload():
         filename = secure_filename(photo.filename)
         photo.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
 
-        my_json = jsonify(message = [{"message" : "File Upload Successful", "filename": filename, "description": description}])
-        return my_json
-
-    return jsonify(errors=[{"errors": form_errors(form)}])
+        return jsonify(message = [{"message" : "File Upload Successful", "filename": filename, "description": description}])
+        
+    return jsonify(errors=[{"errors": form_errors(UploadForm)}])
    
 
 
